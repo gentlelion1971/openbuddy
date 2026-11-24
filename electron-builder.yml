@@ -1,0 +1,40 @@
+appId: com.openbuddy.desktop
+productName: OpenBuddy
+copyright: Copyright (c) 2026
+directories:
+  output: dist-packaged
+# tesseract.js spawns its OCR worker from a real file path (worker_threads
+# cannot load a script from inside an asar archive) and loads its WASM core
+# from the tesseract.js-core package, so both packages must stay unpacked.
+asarUnpack:
+  - '**/tesseract.js/**'
+  - '**/tesseract.js-core/**'
+files:
+  - dist/**/*
+  - package.json
+extraResources:
+  - from: python
+    to: python
+win:
+  # Primary deliverable: a single EXE installer (NSIS). Double-click to install.
+  # The unpacked "dir" target is only for local testing; use dist:win:dir for it.
+  target:
+    - nsis
+  artifactName: ${productName}-${version}-setup.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  allowElevation: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: OpenBuddy
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+  # NOTE: building the NSIS installer requires Windows (or Wine on Linux).
+  # On Linux, only the unpacked dir target can be built; the .exe installer
+  # must be produced on Windows with: npm run dist:win:installer
+linux:
+  target:
+    - dir
+  category: Utility

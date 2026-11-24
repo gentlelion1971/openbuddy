@@ -1,0 +1,96 @@
+{
+  "stt": [
+    {
+      "model": "tiny",
+      "lang": "en",
+      "seconds": 0.92,
+      "audio_seconds": 5.49,
+      "rtf": 0.17,
+      "error_rate": 0.0526,
+      "hypothesis": "The meeting is on Tuesday at 10 in the morning. Please bring the quarterly report and the signed contract."
+    },
+    {
+      "model": "tiny",
+      "lang": "zh",
+      "seconds": 0.71,
+      "audio_seconds": 4.53,
+      "rtf": 0.16,
+      "error_rate": 0.4762,
+      "hypothesis": "明天下午3點,開會請帶上紀度飽高和千,好的合同"
+    },
+    {
+      "model": "base",
+      "lang": "en",
+      "seconds": 1.13,
+      "audio_seconds": 5.49,
+      "rtf": 0.21,
+      "error_rate": 0.0526,
+      "hypothesis": "The meeting is on Tuesday at 10 in the morning. Please bring the quarterly report and the signed contract."
+    },
+    {
+      "model": "base",
+      "lang": "zh",
+      "seconds": 1.2,
+      "audio_seconds": 4.53,
+      "rtf": 0.26,
+      "error_rate": 0.4762,
+      "hypothesis": "明天下午三點,開會請戴上紀錄包高和千好的合同。"
+    },
+    {
+      "model": "small",
+      "lang": "en",
+      "seconds": 4.1,
+      "audio_seconds": 5.49,
+      "rtf": 0.75,
+      "error_rate": 0.0526,
+      "hypothesis": "The meeting is on Tuesday at 10 in the morning. Please bring the quarterly report and the signed contract."
+    },
+    {
+      "model": "small",
+      "lang": "zh",
+      "seconds": 3.38,
+      "audio_seconds": 4.53,
+      "rtf": 0.75,
+      "error_rate": 0.4286,
+      "hypothesis": "明天下午3點,開會請帶上季度包高和簽好的合同。"
+    }
+  ],
+  "tts": [
+    {
+      "voice": "en_US-lessac-medium",
+      "lang": "EN",
+      "synth_seconds": 2.62,
+      "audio_seconds": 5.2,
+      "rtf": 0.5,
+      "intelligibility_error_rate": 0.0526,
+      "hypothesis": "The meeting is on Tuesday at 10 in the morning. Please bring the quarterly report and the signed contract."
+    },
+    {
+      "voice": "en_US-lessac-high",
+      "lang": "EN",
+      "synth_seconds": 4.91,
+      "audio_seconds": 5.27,
+      "rtf": 0.93,
+      "intelligibility_error_rate": 0.0526,
+      "hypothesis": "The meeting is on Tuesday at 10 in the morning. Please bring the quarterly report and the signed contract."
+    },
+    {
+      "voice": "zh_CN-huayan-medium",
+      "lang": "ZH",
+      "synth_seconds": 1.73,
+      "audio_seconds": 4.95,
+      "rtf": 0.35,
+      "intelligibility_error_rate": 0.0476,
+      "hypothesis": "明天下午三点,开会请带上季度报告和调好的合同"
+    },
+    {
+      "voice": "zh_CN-huayan-x_low",
+      "lang": "ZH",
+      "synth_seconds": 1.54,
+      "audio_seconds": 4.62,
+      "rtf": 0.33,
+      "intelligibility_error_rate": 0.5714,
+      "hypothesis": "明天下午3點開會清大上紀錄報高和千號的合同"
+    }
+  ]
+}

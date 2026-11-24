@@ -1,0 +1,13 @@
+# Voice sidecar dependencies.
+# Installed by the first-run wizard into embeddable Python
+# (see src/main/setup.ts) and by scripts/build-sidecar-exe.ps1 when
+# building the frozen exe. Keep pins loose (>=) so patch releases are
+# picked up; the sidecar only uses the stable public APIs of both packages.
+faster-whisper>=1.0
+piper-tts>=1.2
+# PyAV must be new enough for faster-whisper's decode_audio (it passes
+# metadata_errors=..., added in PyAV 10) but older than 15, where PyAV
+# removed that parameter — av 19 fails every transcription with
+# "open() got an unexpected keyword argument 'metadata_errors'"
+# (hit during the 2026-11-22 voice benchmark; verified working: 12.3.0).
+av>=10,<15

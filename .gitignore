@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-packaged
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*
+*.db
+__pycache__/
+voice-eval/venv/

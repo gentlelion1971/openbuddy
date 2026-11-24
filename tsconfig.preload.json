@@ -1,0 +1,1 @@
+{"compilerOptions":{"module":"CommonJS","moduleResolution":"Node","noEmit":false,"outDir":"dist/preload","rootDir":"src/preload","types":["node"]},"extends":"./tsconfig.json","include":["src/preload/**/*"]}

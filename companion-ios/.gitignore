@@ -1,0 +1,8 @@
+# TailscaleKit build output (built by scripts/build-tailscalekit.sh, not committed)
+ThirdParty/TailscaleKit.xcframework/
+ThirdParty/libtailscale-src/
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+# macOS
+.DS_Store
