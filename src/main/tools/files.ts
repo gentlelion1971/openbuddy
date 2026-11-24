@@ -5,7 +5,14 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { PDFParse } from 'pdf-parse';
+// NOTE: pdf-parse is NOT statically imported here. It pulls in pdfjs-dist,
+// whose legacy build runs `new DOMMatrix()` at module top-level and relies
+// on @napi-rs/canvas to polyfill DOMMatrix. If that native prebuild is
+// missing for the target platform (it was missing for win32 in v0.2.1, which
+// crashed the whole main process at startup), a static import would kill
+// the app before it opens. pdf-parse is therefore loaded lazily, only when
+// a PDF is actually read, so a broken PDF stack can only fail that one
+// extraction, never startup. See BUILD_STATUS.md v0.2.2.
 import mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
 import { Document, Packer, Paragraph, TextRun } from 'docx';
@@ -19,6 +26,10 @@ const XLSX_MAX_ROWS = 200;
  *  Pure: no filesystem or permission checks, so email-attachment code can
  *  call it on bytes it downloaded itself. */
 export async function extractPdfText(buffer: Buffer): Promise<string> {
+  // Lazy import (see the note at the top of this file): if the PDF stack
+  // cannot load on this machine, this throws here and the caller records a
+  // per-file failure instead of the app dying at startup.
+  const { PDFParse } = await import('pdf-parse');
   const parser = new PDFParse({ data: buffer });
   try {
     const result = await parser.getText();

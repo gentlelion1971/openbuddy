@@ -1,7 +1,59 @@
 # Build Status — OpenBuddy (Windows 11 desktop app)
 
-Last updated: 2026-11-23 (v0.2.1 — startup crash fix, see below).
+Last updated: 2026-11-23 (v0.2.2 — PDF-library startup crash fix, see below).
 Companion iOS app added 2026-11-22 (sources complete; NOT yet built in Xcode — see "Companion iOS app" below).
+
+## v0.2.2 — PDF-library startup crash fix (2026-11-23, user-reported on Windows)
+
+- **Bug:** v0.2.1 crashed on launch on the user's Windows machine:
+  "A JavaScript error occurred in the main process — ReferenceError:
+  DOMMatrix is not defined" at `pdfjs-dist/legacy/build/pdf.mjs:15620`
+  (`const SCALE_MATRIX = new DOMMatrix();`, module top-level). The PDF
+  library (pdf-parse v2 → pdfjs-dist v5) runs that line when its module
+  loads, and it only works because pdfjs-dist polyfills `DOMMatrix` from
+  `@napi-rs/canvas` — a native module whose binary is platform-specific.
+  The Windows package contained only the Linux prebuilds
+  (`canvas-linux-x64-gnu`, `canvas-linux-x64-musl`); the win32 prebuild
+  was never installed, because `npm install` on this Linux build machine
+  only installs the host platform's optional dependencies. So on Windows
+  `require("@napi-rs/canvas")` failed, no DOMMatrix was polyfilled, and
+  importing pdfjs-dist threw. (Why v0.2.0 showed the tesseract error
+  first instead: the tesseract named-export failure is an ESM *linking*
+  error, which aborts before any module *evaluation* — pdfjs-dist only
+  throws during evaluation. The v0.2.1 note's claim that pdf-parse was
+  "proven working" on Windows was therefore wrong; it had simply never
+  been evaluated there.)
+- **Fix (root cause):** installed the matching Windows prebuild
+  `@napi-rs/canvas-win32-x64-msvc@0.1.80` and recorded it in
+  `package.json` `optionalDependencies`, so it is part of the source
+  tree and gets packaged. The packaged Windows app now contains
+  `app.asar.unpacked/node_modules/@napi-rs/canvas-win32-x64-msvc/skia.win32-x64-msvc.node`
+  (verified PE32+ Windows DLL). Rebuild for Windows on Linux from a
+  clean checkout must re-run
+  `npm install --os=win32 --cpu=x64 --save-optional @napi-rs/canvas-win32-x64-msvc@0.1.80`
+  first, because a plain Linux `npm install` skips the win32 optional
+  dependency. Rule: **every platform-split native dependency must have
+  its target-platform prebuild installed explicitly before packaging
+  for that platform** (same trap as the v0.2.1 CJS lesson; see AGENTS.md).
+- **Fix (defense in depth):** `src/main/tools/files.ts` no longer
+  statically imports `pdf-parse`; `extractPdfText()` loads it with a
+  dynamic `import()` only when a PDF is actually read. A broken PDF
+  stack can now only fail that one extraction (caught per-file by the
+  attachment code) and can never kill startup again.
+- **Verification for v0.2.2:** reproduced the exact crash on Linux by
+  hiding the canvas prebuild — importing pdfjs-dist then fails with
+  `DOMMatrix is not defined`, matching the user's screenshot. After the
+  fix: typecheck passes; unit tests 25/25; Linux build + smoke test 6/6;
+  Windows portable built; packaged `app.asar` extracted and verified
+  (version 0.2.2, dynamic pdf-parse import, no static pdf-parse import,
+  win32 canvas .node present and unpacked). Defense test: with the Linux
+  canvas prebuild hidden, the packaged Linux app still starts and passes
+  smoke 6/6. Still NOT tested on real Windows by the developer — the
+  user is the first Windows run.
+- **Download:** Google Drive `OpenBuddy-v0.2.2-win-portable.zip` (218 MB,
+  file ID `1vKHIj7sNPPiPd5L37-c_Yq9VP1DYRgYc`), unzip and run
+  `OpenBuddy.exe`. Source pushed to
+  `github.com/gentlelion1971/openbuddy` (same non-commercial license).
 
 ## v0.2.1 — startup crash fix (2026-11-23, user-reported on Windows)
 
