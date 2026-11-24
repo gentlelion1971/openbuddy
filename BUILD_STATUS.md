@@ -1,7 +1,40 @@
 # Build Status — OpenBuddy (Windows 11 desktop app)
 
-Last updated: 2026-11-23 (v0.2.0 build complete; not yet tested on Windows).
+Last updated: 2026-11-23 (v0.2.1 — startup crash fix, see below).
 Companion iOS app added 2026-11-22 (sources complete; NOT yet built in Xcode — see "Companion iOS app" below).
+
+## v0.2.1 — startup crash fix (2026-11-23, user-reported on Windows)
+
+- **Bug:** v0.2.0 crashed on launch on the user's Windows machine:
+  "A JavaScript error occurred in the main process — SyntaxError: Named
+  export 'createWorker' not found" at `dist/main/tools/ocr.js:11`
+  (`import { createWorker } from 'tesseract.js'`). The main process is ESM
+  (`module: NodeNext`); tesseract.js v7 is a CommonJS module whose entry
+  re-exports through a spread (`...Tesseract`), so Node's ESM loader cannot
+  resolve named imports from it. The same latent risk existed in
+  `browser.ts` (playwright: `module.exports = require('playwright-core')`)
+  and `email.ts` (imapflow) — both would have crashed next, since they load
+  after ocr.js.
+- **Fix:** no named imports from CommonJS modules in the main process.
+  `ocr.ts` loads tesseract.js through `createRequire`; `browser.ts` and
+  `email.ts` use the default import plus destructure. Named imports from
+  CJS in the main process are now a known-bad pattern — do not reintroduce.
+  (`pdf-parse` and `docx` named imports were left alone: they load before
+  ocr.js, so they are proven working on the user's Windows machine.)
+- **Testing caveat:** the Linux smoke test passes 6/6 against BOTH the
+  broken and the fixed build — Linux Electron resolves the named import
+  fine. The Linux smoke test therefore CANNOT catch this class of bug; a
+  real Windows launch remains the only test for it. Do not claim Windows
+  startup works until the user actually launches it there.
+- **Verification for v0.2.1:** typecheck passes; unit tests 25/25; Linux
+  build + smoke test 6/6; Windows portable built; the packaged
+  `app.asar` was extracted and verified to contain the fix, no named CJS
+  imports, and package.json version 0.2.1. Still NOT tested on real
+  Windows by the developer — the user is the first Windows run.
+- **Download:** Google Drive `OpenBuddy-v0.2.1-win-portable.zip` (204 MB,
+  file ID `1oWDnxjUS64-sOL0JGynUnslOtls-6o55`), unzip and run
+  `OpenBuddy.exe`. Source pushed to
+  `github.com/gentlelion1971/openbuddy` (same non-commercial license).
 
 ## Product decisions (from the user)
 

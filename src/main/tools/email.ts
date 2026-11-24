@@ -3,7 +3,13 @@
 // closes it before returning. Passwords are never logged.
 // All code, comments, log messages and docs in this project are English only.
 
-import { ImapFlow } from 'imapflow';
+import imapflow from 'imapflow';
+import type { ImapFlow } from 'imapflow';
+
+// imapflow is a CommonJS module: use the default import instead of a
+// named import, which Node's ESM loader cannot always resolve from CJS
+// (same startup crash as tesseract.js in ocr.ts).
+const { ImapFlow: ImapFlowClass } = imapflow;
 import nodemailer from 'nodemailer';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -283,7 +289,7 @@ async function connectImap(account: AccountRow): Promise<ImapFlow> {
     throw new Error(`No stored password for account "${account.label}". Reconnect the account in Settings.`);
   }
   const port = account.port > 0 ? account.port : DEFAULT_IMAP_PORT;
-  const client = new ImapFlow({
+  const client = new ImapFlowClass({
     host: account.host,
     port,
     secure: account.secure !== 0,

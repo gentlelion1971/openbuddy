@@ -9,8 +9,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { createWorker } from 'tesseract.js';
 import type { Worker } from 'tesseract.js';
+
+// tesseract.js v7 is a CommonJS module whose entry re-exports through a
+// spread (`...Tesseract`), so Node's ESM loader cannot resolve named
+// imports from it: `import { createWorker }` throws at startup and kills
+// the whole main process. Load it through createRequire instead, which
+// returns the full exports object regardless of static analysability.
+const require = createRequire(import.meta.url);
+const { createWorker } = require('tesseract.js') as typeof import('tesseract.js');
 import * as store from '../store.js';
 
 export const OCR_LANG = 'eng';

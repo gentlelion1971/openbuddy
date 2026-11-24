@@ -3,7 +3,14 @@
 // DuckDuckGo Lite page (no API key) for web search.
 // All code, comments, log messages and docs in this project are English only.
 
-import { chromium, type Browser, type Locator, type Page } from 'playwright';
+import type { Browser, Locator, Page } from 'playwright';
+import playwright from 'playwright';
+
+// Playwright is a CommonJS module that re-exports through
+// `module.exports = require('playwright-core')`, so Node's ESM loader
+// cannot resolve named imports from it on some platforms (same startup
+// crash as tesseract.js in ocr.ts). Use the default import instead.
+const { chromium } = playwright;
 import type { ToolContext, ToolDefinition, ToolResult } from './types.js';
 
 const PAGE_TIMEOUT_MS = 20_000;
